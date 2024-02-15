@@ -22,7 +22,7 @@ const db = new sqlite3.Database('./db.sqlite', (err) => {
                 verified INTEGER NOT NULL DEFAULT 0,
                 createdAt DATE NOT NULL DEFAULT (DATETIME('now')),
                 verificationId TEXT,
-                password TEXT DEFAULT "",
+                password TEXT,
                 description TEXT
             )`);
         });

@@ -47,8 +47,8 @@ debugger;
             const verificationId = uuid();
 
             // Hash password
-            const hashedPassword = await encrypt(password);
-
+            // const hashedPassword = await encrypt(password);
+            const hashedPassword = password;
             // Insert new user into the database
             db.run("INSERT INTO students (email, password, verificationId) VALUES (?, ?, ?)", [email, hashedPassword, verificationId], async function (err) {
                 if (err) {
@@ -94,7 +94,8 @@ auth.post("/login", async function (req, res) {
             //     return res.status(404).json({ message: "Your account is not verified", errorcode: "AccountNotVerified" });
             // }
             // Compare passwords
-            const passwordMatch = encryptAndCompare(passwordPlain, user.password);
+            // const passwordMatch = encryptAndCompare(passwordPlain, user.password);
+            const passwordMatch =  passwordPlain === user.password;
             if (passwordMatch) {
                 
                 ///===app does not work from here onwards
