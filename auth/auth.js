@@ -1,4 +1,5 @@
-require('dotenv').config();
+// require('dotenv').config();
+const JWT_SECRET = "7gj52b5389vmvqwspQvYtz91076vZpoWzP61c";
 // const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -11,6 +12,17 @@ const db = require('../db.js'); // Require the database connection
 const sendGmail = require("./gmail.js");
 // const send_Forget_Password_Gmail = require("./forget_password_gmail.js");
 const { v4: uuid } = require('uuid');
+////////////////////////////////////////////////////////
+function encrypt(password) {
+    return password.split('').map(char => String.fromCharCode(char.charCodeAt(0) + 1)).join('');
+}
+
+function encryptAndCompare(incommingPassword, userPassword) {
+    const encryptedPassword = encrypt(incommingPassword)
+    console.log("decryptedPassword", encryptedPassword);
+    return encryptedPassword === userPassword;
+}
+
 ////////////////////////////////////////////////////////
 
 auth.post('/signup', async (req, res) => {
@@ -35,7 +47,7 @@ debugger;
             const verificationId = uuid();
 
             // Hash password
-            const hashedPassword = await bcrypt.hash(password, 10);
+            const hashedPassword = await encrypt(password);
 
             // Insert new user into the database
             db.run("INSERT INTO students (email, password, verificationId) VALUES (?, ?, ?)", [email, hashedPassword, verificationId], async function (err) {
@@ -76,14 +88,16 @@ auth.post("/login", async function (req, res) {
             if (!user) {
                 return res.status(404).json({ message: "Email address not found" });
             }
+            debugger;
 //==Allow the student to be logged in without verification
             // if (user.verified == 0) {
             //     return res.status(404).json({ message: "Your account is not verified", errorcode: "AccountNotVerified" });
             // }
-
             // Compare passwords
-            const passwordMatch = await bcrypt.compare(passwordPlain, user.password);
+            const passwordMatch = encryptAndCompare(passwordPlain, user.password);
             if (passwordMatch) {
+                
+                ///===app does not work from here onwards
                 const token = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: "30d" });
                 res.set("Authorization", `Bearer ${token}`);
                 return res.status(200).json({ message: "Login successful", token: token, email });

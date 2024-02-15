@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./index.js",
     "dev": "nodemon ./index.js",
-    "debug": "node --inspect=5000 index.js"
+    "debug": "nodemon --inspect=5000 index.js"
   },
   "author": "Bilal Tariq",
   "license": "ISC",
